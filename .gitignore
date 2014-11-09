@@ -1,0 +1,6 @@
+TestResults
+**/obj/*
+**/bin/Debug/*
+**/bin/Release/*
+**/Samples/bin/*
+!**/Samples/bin/*.dll

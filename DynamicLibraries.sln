@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karadzhov.Interop.DynamicLibraries", "Karadzhov.Interop.DynamicLibraries\Karadzhov.Interop.DynamicLibraries.csproj", "{746061B6-2F22-47E4-AF74-9B9E3E8ACFD2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{24A5C80D-FF8F-4C2A-8E1A-42B95F8A2498}"
+	ProjectSection(SolutionItems) = preProject
+		CustomDictionary.xml = CustomDictionary.xml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karadzhov.Interop.DynamicLibraries.Tests", "Karadzhov.Interop.DynamicLibraries.Tests\Karadzhov.Interop.DynamicLibraries.Tests.csproj", "{955E3F2A-8CC7-4286-A3B3-8842EA47AD26}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{746061B6-2F22-47E4-AF74-9B9E3E8ACFD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{746061B6-2F22-47E4-AF74-9B9E3E8ACFD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{746061B6-2F22-47E4-AF74-9B9E3E8ACFD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{746061B6-2F22-47E4-AF74-9B9E3E8ACFD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{955E3F2A-8CC7-4286-A3B3-8842EA47AD26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{955E3F2A-8CC7-4286-A3B3-8842EA47AD26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{955E3F2A-8CC7-4286-A3B3-8842EA47AD26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{955E3F2A-8CC7-4286-A3B3-8842EA47AD26}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
