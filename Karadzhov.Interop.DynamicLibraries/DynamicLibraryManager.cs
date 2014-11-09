@@ -82,6 +82,15 @@ namespace Karadzhov.Interop.DynamicLibraries
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "The reference is stored in a dictionary and released upon Dispose.")]
         public object InstanceInvoke(string library, string method, Type returnType, params object[] arguments)
         {
+            if (null == library)
+                throw new ArgumentNullException("library");
+
+            if (null == method)
+                throw new ArgumentNullException("method");
+
+            if (null == returnType)
+                throw new ArgumentNullException("returnType");
+
             if (false == this.loadedLibraries.ContainsKey(library))
             {
                 lock (this.loadedLibraries)
