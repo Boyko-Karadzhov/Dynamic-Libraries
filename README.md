@@ -13,7 +13,7 @@ Lets say you want to call a procedure that is defined in a native assembly _C:\M
 
 You call that in C# using this method:
 
-    Karadzhov.Interop.DynamicLibraries.DynamicLibraryManager.Invoke<int>(dllPath, "sum", 2, 5);
+    Karadzhov.Interop.DynamicLibraries.DynamicLibraryManager.Invoke<int>("C:\\MyAssembly.dll", "sum", 2, 5);
 
 
 Easy as scrambled eggs! Have fun!
