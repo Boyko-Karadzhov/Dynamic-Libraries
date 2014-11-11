@@ -62,9 +62,7 @@ namespace Karadzhov.Interop.DynamicLibraries.Tests
             Assert.AreEqual(expectedMulResult, mulResult);
         }
 
-        // Thread safety bug. Will address later.
         [TestMethod]
-        [Ignore]
         public void Invoke_DelayedSumFunctionFreeLibrary_ReturnsCorrectSum()
         {
             var dllPath = Utilities.TestProjectPath() + "Samples\\bin\\delayed_sum.dll";
