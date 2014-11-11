@@ -57,13 +57,13 @@ namespace Karadzhov.Interop.DynamicLibraries
         }
 
         /// <summary>
-        /// Special thanks to Joel Pobar: http://blogs.msdn.com/b/joelpob/archive/2004/02/15/73239.aspx
+        /// Reference: http://blogs.msdn.com/b/joelpob/archive/2004/02/15/73239.aspx
         /// </summary>
         private Type CreateNewDelegateType(Type returnType, params Type[] argumentTypes)
         {
             var delegateId = Guid.NewGuid().ToString("N");
-            var typeBuilder = this.moduleBuilder.DefineType("DynamicDelegate_" + delegateId, TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass, typeof(System.MulticastDelegate));
-            ConstructorBuilder constructorBuilder = typeBuilder.DefineConstructor(MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public, CallingConventions.Standard, new Type[] { typeof(object), typeof(System.IntPtr) });
+            var typeBuilder = this.moduleBuilder.DefineType("DynamicDelegate_" + delegateId, TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass, typeof(MulticastDelegate));
+            var constructorBuilder = typeBuilder.DefineConstructor(MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public, CallingConventions.Standard, new Type[] { typeof(object), typeof(IntPtr) });
             constructorBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 
             var methodBuilder = typeBuilder.DefineMethod("Invoke", MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual, returnType, argumentTypes);
