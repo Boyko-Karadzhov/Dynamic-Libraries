@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -26,12 +25,16 @@ namespace Karadzhov.Interop.DynamicLibraries
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)] 
         public void Dispose()
         {
-            if (null != this.handle && false != this.handle.IsInvalid)
+            if (false == this.isDisposed)
             {
-                this.handle.Dispose();
-            }
+                if (null != this.handle && false == this.handle.IsInvalid && false == this.handle.IsClosed)
+                {
+                    this.handle.Dispose();
+                }
 
-            GC.SuppressFinalize(this);
+                GC.SuppressFinalize(this);
+                this.isDisposed = true;
+            }
         }
 
         public object Invoke(string method, Type returnType, params object[] arguments)
@@ -55,6 +58,7 @@ namespace Karadzhov.Interop.DynamicLibraries
         }
 
         private DynamicLibraryHandle handle;
+        private volatile bool isDisposed;
         private IDictionary<string, Delegate> methods;
     }
 }

@@ -35,8 +35,24 @@ namespace Karadzhov.Interop.DynamicLibraries.Tests
             Assert.AreSame(delegateType, secondDelegateType);
         }
 
+        [TestMethod]
+        public void GetDelegateType_GetDifferentDelegate_ReturnsExpectedType()
+        {
+            var testDelegateType = DynamicDelegateTypeFactory.Current.GetDelegateType(typeof(void), typeof(int), typeof(string));
+            var doubleDelegateType = DynamicDelegateTypeFactory.Current.GetDelegateType(typeof(double), typeof(double));
+
+            var delegateInstance = Delegate.CreateDelegate(doubleDelegateType, this, "DoubleTestMethod");
+            Assert.IsNotNull(delegateInstance);
+            Assert.AreEqual(Math.PI, delegateInstance.DynamicInvoke(5.0d));
+        }
+
         private void TestMethod(int a, string b)
         {
+        }
+
+        private double DoubleTestMethod(double d)
+        {
+            return Math.PI;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Karadzhov.Interop.DynamicLibraries
@@ -36,6 +37,33 @@ namespace Karadzhov.Interop.DynamicLibraries
 
             DynamicLibraryManager.Instance.Dispose();
             DynamicLibraryManager.Instantiate();
+        }
+
+        /// <summary>
+        /// Frees a specific library.
+        /// </summary>
+        /// <param name="library">The library.</param>
+        /// <remarks>Throws exception if the library is not loaded. Use overload with additional boolean for different behavior.</remarks>
+        public static void Reset(string library)
+        {
+            DynamicLibraryManager.Reset(library, throwIfNotFound: true);
+        }
+
+        /// <summary>
+        /// Frees a specific library.
+        /// </summary>
+        /// <param name="library">The library.</param>
+        /// <param name="throwIfNotFound">If true the method throws exception if the library is not loaded otherwise ignores the call.</param>
+        public static void Reset(string library, bool throwIfNotFound)
+        {
+            if (DynamicLibraryManager.instance.IsValueCreated)
+            {
+                DynamicLibraryManager.Instance.InstanceReset(library, throwIfNotFound);
+            }
+            else if (throwIfNotFound)
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Library '{0}' cannot be reset because it was not loaded in the first place.", library));
+            }
         }
 
         /// <summary>
@@ -106,16 +134,27 @@ namespace Karadzhov.Interop.DynamicLibraries
             return result;
         }
 
+        public void InstanceReset(string library, bool throwIfNotFound)
+        {
+            DynamicLibrary libraryToReset;
+            if (this.loadedLibraries.TryGetValue(library, out libraryToReset))
+            {
+                this.loadedLibraries.Remove(library);
+                libraryToReset.Dispose();
+            }
+            else if (throwIfNotFound)
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Library '{0}' cannot be reset because it was not loaded in the first place.", library));
+            }
+        }
+
         public void Dispose()
         {
             if (null != this.loadedLibraries)
             {
                 while (this.loadedLibraries.Keys.Count > 0)
                 {
-                    var key = this.loadedLibraries.Keys.First();
-                    var library = this.loadedLibraries[key];
-                    library.Dispose();
-                    this.loadedLibraries.Remove(key);
+                    this.InstanceReset(this.loadedLibraries.Keys.First(), throwIfNotFound: false);
                 }
 
                 this.loadedLibraries = null;
