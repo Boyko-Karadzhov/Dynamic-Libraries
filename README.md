@@ -11,9 +11,18 @@ Lets say you want to call a procedure that is defined in a native assembly _C:\M
 
     __declspec(dllexport) int sum(int a, int b);
 
-You call that in C# using this method:
+---
+
+### DynamicLibraryManager.Invoke
+You call the procedure above in a C# code using this method:
 
     Karadzhov.Interop.DynamicLibraries.DynamicLibraryManager.Invoke<int>("C:\\MyAssembly.dll", "sum", 2, 5);
 
+---
 
-Easy as scrambled eggs! Have fun!
+### DynamicLibraryManager.Reset
+A library will be released by calling the Reset method like this:
+
+    Karadzhov.Interop.DynamicLibraries.DynamicLibraryManager.Reset("C:\\MyAssembly.dll");
+
+You will want to release a library so it can be updated and loaded again for another invocation. Call Reset without arguments to release all loaded libraries.
