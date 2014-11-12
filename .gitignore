@@ -3,4 +3,3 @@ TestResults
 **/bin/Debug/*
 **/bin/Release/*
 **/Samples/bin/*
-!**/Samples/bin/*.dll
