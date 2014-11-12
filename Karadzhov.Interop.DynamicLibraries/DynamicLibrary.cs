@@ -12,6 +12,7 @@ namespace Karadzhov.Interop.DynamicLibraries
     {
         public DynamicLibrary(string path)
         {
+            this.key = path;
             this.methods = new Dictionary<string, Delegate>();
             this.handle = NativeMethods.LoadLibrary(path);
                 
@@ -31,44 +32,61 @@ namespace Karadzhov.Interop.DynamicLibraries
                 return;
 
             this.invocationLock.EnterWriteLock();
-
-            if (null != this.handle && false == this.handle.IsInvalid && false == this.handle.IsClosed)
+            try
             {
-                this.handle.Dispose();
-                this.handle = null;
+                if (null != this.handle && false == this.handle.IsInvalid && false == this.handle.IsClosed)
+                {
+                    this.handle.Dispose();
+                    this.handle = null;
+                }
+
+                GC.SuppressFinalize(this);
+            }
+            finally
+            {
+                this.invocationLock.ExitWriteLock();
             }
 
-            GC.SuppressFinalize(this);
-
-            this.invocationLock.ExitWriteLock();
             this.invocationLock.Dispose();
             this.invocationLock = null;
         }
 
         public object Invoke(string method, Type returnType, params object[] arguments)
         {
+            object result = null;
             this.invocationLock.EnterReadLock();
-
-            if (false == this.methods.ContainsKey(method))
+            try
             {
-                lock (this.methods)
+                if (false == this.methods.ContainsKey(method))
                 {
-                    if (false == this.methods.ContainsKey(method))
+                    lock (this.methods)
                     {
-                        var procedurePointer = NativeMethods.GetProcAddress(this.handle, method);
+                        if (false == this.methods.ContainsKey(method))
+                        {
+                            var procedurePointer = NativeMethods.GetProcAddress(this.handle, method);
+                            if (IntPtr.Zero == procedurePointer)
+                            {
+                                var error = Marshal.GetLastWin32Error();
+                                throw new Win32Exception(error, string.Format(CultureInfo.InvariantCulture, "Could not find method {0} in library {1}. Error code: {2}.", method, key, error));
+                            }
 
-                        var del = DynamicDelegateTypeFactory.Current.GetDelegateType(returnType, arguments.Select(a => a.GetType()).ToArray());
-                        this.methods[method] = Marshal.GetDelegateForFunctionPointer(procedurePointer, del);
+                            var del = DynamicDelegateTypeFactory.Current.GetDelegateType(returnType, arguments.Select(a => a != null ? a.GetType() : typeof(IntPtr)).ToArray());
+                            this.methods[method] = Marshal.GetDelegateForFunctionPointer(procedurePointer, del);
+                        }
                     }
                 }
+
+                result = methods[method].DynamicInvoke(arguments);
+            }
+            finally
+            {
+                this.invocationLock.ExitReadLock();
             }
 
-            var result = methods[method].DynamicInvoke(arguments);
-
-            this.invocationLock.ExitReadLock();
             return result;
         }
 
+        private string key;
         private DynamicLibraryHandle handle;
         private System.Threading.ReaderWriterLockSlim invocationLock;
         private IDictionary<string, Delegate> methods;
