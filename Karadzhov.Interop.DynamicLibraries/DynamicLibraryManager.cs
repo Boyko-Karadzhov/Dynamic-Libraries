@@ -1,18 +1,15 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 
 namespace Karadzhov.Interop.DynamicLibraries
 {
-    public sealed class DynamicLibraryManager : IDisposable
+    public sealed class DynamicLibraryManager
     {
         #region Static
-
-        static DynamicLibraryManager()
-        {
-            DynamicLibraryManager.Instantiate();
-        }
 
         private static DynamicLibraryManager Instance
         {
@@ -20,11 +17,6 @@ namespace Karadzhov.Interop.DynamicLibraries
             {
                 return DynamicLibraryManager.instance.Value;
             }
-        }
-
-        private static void Instantiate()
-        {
-            DynamicLibraryManager.instance = new Lazy<DynamicLibraryManager>(() => new DynamicLibraryManager());
         }
 
         /// <summary>
@@ -35,8 +27,7 @@ namespace Karadzhov.Interop.DynamicLibraries
             if (false == DynamicLibraryManager.instance.IsValueCreated)
                 return;
 
-            DynamicLibraryManager.Instance.Dispose();
-            DynamicLibraryManager.Instantiate();
+            DynamicLibraryManager.Instance.InstanceReset();
         }
 
         /// <summary>
@@ -96,7 +87,7 @@ namespace Karadzhov.Interop.DynamicLibraries
             return DynamicLibraryManager.Instance.InstanceInvoke(library, method, returnType, arguments);
         }
 
-        private static Lazy<DynamicLibraryManager> instance;
+        private static Lazy<DynamicLibraryManager> instance = new Lazy<DynamicLibraryManager>(() => new DynamicLibraryManager());
 
         #endregion
 
@@ -104,10 +95,10 @@ namespace Karadzhov.Interop.DynamicLibraries
 
         private DynamicLibraryManager()
         {
-            this.loadedLibraries = new Dictionary<string, DynamicLibrary>();
+            this.loadedLibraries = new ConcurrentDictionary<string, DynamicLibrary>();
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "The reference is stored in a dictionary and released upon Dispose.")]
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "The reference is stored in a dictionary and released upon Dispose.")]
         public object InstanceInvoke(string library, string method, Type returnType, params object[] arguments)
         {
             if (null == library)
@@ -134,6 +125,14 @@ namespace Karadzhov.Interop.DynamicLibraries
             return result;
         }
 
+        public void InstanceReset()
+        {
+            while (this.loadedLibraries.Keys.Count > 0)
+            {
+                this.InstanceReset(this.loadedLibraries.Keys.First(), throwIfNotFound: false);
+            }
+        }
+
         public void InstanceReset(string library, bool throwIfNotFound)
         {
             DynamicLibrary libraryToReset;
@@ -145,19 +144,6 @@ namespace Karadzhov.Interop.DynamicLibraries
             else if (throwIfNotFound)
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Library '{0}' cannot be reset because it was not loaded in the first place.", library));
-            }
-        }
-
-        public void Dispose()
-        {
-            if (null != this.loadedLibraries)
-            {
-                while (this.loadedLibraries.Keys.Count > 0)
-                {
-                    this.InstanceReset(this.loadedLibraries.Keys.First(), throwIfNotFound: false);
-                }
-
-                this.loadedLibraries = null;
             }
         }
 
