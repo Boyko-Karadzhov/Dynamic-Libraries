@@ -5,6 +5,12 @@ A .Net library for managing native DLLs at run-time.
 
 This library provides the ability to call procedures from native DLLs without knowing the names of the procedures or libraries that you are going to use while compiling.
 
+# Installation
+
+To install Dynamic-Libraries, run the following command in the Package Manager Console
+
+    PM> Install-Package Karadzhov.Interop.DynamicLibrarie
+
 # Sample usage
 
 Lets say you want to call a procedure that is defined in a native assembly _C:\MyAssembly.dll_ and that procedure is defined like this:

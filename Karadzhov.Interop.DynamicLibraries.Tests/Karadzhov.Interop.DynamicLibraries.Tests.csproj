@@ -66,10 +66,6 @@
     <None Include="Karadzhov.Interop.DynamicLibraries.Tests.snk" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Samples\bin\sum.dll" />
-    <Content Include="Samples\sum.c" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Karadzhov.Interop.DynamicLibraries\Karadzhov.Interop.DynamicLibraries.csproj">
       <Project>{746061b6-2f22-47e4-af74-9b9e3e8acfd2}</Project>
       <Name>Karadzhov.Interop.DynamicLibraries</Name>
