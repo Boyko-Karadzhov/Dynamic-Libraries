@@ -57,7 +57,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="DynamicDelegateTypeFactoryTests.cs" />
+    <Compile Include="DelegateTypeFactoryTests.cs" />
     <Compile Include="DynamicLibraryManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />

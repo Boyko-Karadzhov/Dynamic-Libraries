@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -10,21 +11,16 @@ using System.Threading;
 
 namespace Karadzhov.Interop.DynamicLibraries
 {
+    [DebuggerDisplay("Karadzhov.Interop.DynamicLibraries.DynamicLibrary({key})")]
     internal sealed class DynamicLibrary : IDisposable
     {
         public DynamicLibrary(string path)
         {
             this.key = path;
             this.methods = new ConcurrentDictionary<string, Delegate>();
-            this.handle = NativeMethods.LoadLibrary(path);
-                
-            if (null == this.handle || this.handle.IsInvalid)
-            {
-                var error = Marshal.GetLastWin32Error();
-                throw new Win32Exception(error, string.Format(CultureInfo.InvariantCulture, "Could not load library {0}. Error code: {1}.", path, error));
-            }
-
             this.invocationLock = new System.Threading.ReaderWriterLockSlim();
+
+            this.Load(path);
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
@@ -82,7 +78,7 @@ namespace Karadzhov.Interop.DynamicLibraries
                         throw new Win32Exception(error, string.Format(CultureInfo.InvariantCulture, "Could not find method {0} in library {1}. Error code: {2}.", method, key, error));
                     }
 
-                    var del = DynamicDelegateTypeFactory.Current.GetDelegateType(returnType, arguments.Select(a => a != null ? a.GetType() : typeof(IntPtr)).ToArray());
+                    var del = DelegateTypeFactory.Current.GetDelegateType(returnType, arguments.Select(a => a != null ? a.GetType() : typeof(IntPtr)).ToArray());
                     this.methods[method] = Marshal.GetDelegateForFunctionPointer(procedurePointer, del);
                 }
 
@@ -97,6 +93,26 @@ namespace Karadzhov.Interop.DynamicLibraries
             }
 
             return result;
+        }
+
+        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+        private void Load(string path)
+        {
+            this.invocationLock.EnterWriteLock();
+            try
+            {
+                this.handle = NativeMethods.LoadLibrary(path);
+
+                if (null == this.handle || this.handle.IsInvalid)
+                {
+                    var error = Marshal.GetLastWin32Error();
+                    throw new Win32Exception(error, string.Format(CultureInfo.InvariantCulture, "Could not load library {0}. Error code: {1}.", path, error));
+                }
+            }
+            finally
+            {
+                this.invocationLock.ExitReadLock();
+            }
         }
 
         private volatile bool isDisposed;

@@ -45,7 +45,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DynamicDelegateTypeFactory.cs" />
+    <Compile Include="DelegateTypeFactory.cs" />
     <Compile Include="DynamicLibrary.cs" />
     <Compile Include="DynamicLibraryHandle.cs" />
     <Compile Include="DynamicLibraryManager.cs" />
