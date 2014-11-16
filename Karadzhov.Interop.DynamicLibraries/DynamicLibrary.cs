@@ -111,7 +111,7 @@ namespace Karadzhov.Interop.DynamicLibraries
             }
             finally
             {
-                this.invocationLock.ExitReadLock();
+                this.invocationLock.ExitWriteLock();
             }
         }
 
