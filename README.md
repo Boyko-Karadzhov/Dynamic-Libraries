@@ -9,7 +9,7 @@ This library provides the ability to call procedures from native DLLs without kn
 
 To install Dynamic-Libraries, run the following command in the Package Manager Console
 
-    PM> Install-Package Karadzhov.Interop.DynamicLibrarie
+    PM> Install-Package Karadzhov.Interop.DynamicLibraries
 
 # Sample usage
 
