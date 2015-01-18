@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Karadzhov.Interop.DynamicLibraries
@@ -56,9 +57,6 @@ namespace Karadzhov.Interop.DynamicLibraries
             return this.storage[key];
         }
 
-        /// <summary>
-        /// Reference: http://blogs.msdn.com/b/joelpob/archive/2004/02/15/73239.aspx
-        /// </summary>
         private Type CreateNewDelegateType(Type returnType, params Type[] argumentTypes)
         {
             var delegateId = Guid.NewGuid().ToString("N");
@@ -66,7 +64,7 @@ namespace Karadzhov.Interop.DynamicLibraries
             var constructorBuilder = typeBuilder.DefineConstructor(MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public, CallingConventions.Standard, new Type[] { typeof(object), typeof(IntPtr) });
             constructorBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 
-            var methodBuilder = typeBuilder.DefineMethod("Invoke", MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual, returnType, argumentTypes);
+            var methodBuilder = typeBuilder.DefineMethod("Invoke", MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual, CallingConventions.Standard, returnType, null, new Type[] { typeof(CallConvCdecl) }, argumentTypes, null, null);
             methodBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 
             var t = typeBuilder.CreateType();

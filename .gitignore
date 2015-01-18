@@ -3,3 +3,4 @@ TestResults
 **/bin/Debug/*
 **/bin/Release/*
 **/Samples/bin/*
+**/Samples/x64/*
