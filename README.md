@@ -7,7 +7,7 @@ This library provides the ability to call procedures from native DLLs without kn
 
 # Installation
 
-To install Dynamic-Libraries, run the following command in the Package Manager Console
+To install Dynamic-Libraries, run the following command in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console)
 
     PM> Install-Package Karadzhov.Interop.DynamicLibraries
 
