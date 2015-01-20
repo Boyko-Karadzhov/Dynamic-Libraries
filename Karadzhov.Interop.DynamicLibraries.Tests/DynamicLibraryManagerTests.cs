@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -33,9 +34,9 @@ namespace Karadzhov.Interop.DynamicLibraries.Tests
             //// Apparently the exported name of the function is messed up for stdcall functions in 32 bit binaries.
             int result;
             if (Environment.Is64BitProcess)
-                result = DynamicLibraryManager.Invoke<int>(dllPath, "sum", 9, 3);
+                result = DynamicLibraryManager.Invoke<int>(CallingConvention.StdCall, dllPath, "sum", 9, 3);
             else
-                result = DynamicLibraryManager.Invoke<int>(dllPath, "_sum@8", 9, 3);
+                result = DynamicLibraryManager.Invoke<int>(CallingConvention.StdCall, dllPath, "_sum@8", 9, 3);
 
             Assert.AreEqual(12, result);
         }

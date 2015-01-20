@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Karadzhov.Interop.DynamicLibraries
@@ -36,20 +37,25 @@ namespace Karadzhov.Interop.DynamicLibraries
 
         public Type GetDelegateType(Type returnType, params Type[] argumentTypes)
         {
+            return this.GetDelegateType(CallingConvention.Cdecl, returnType, argumentTypes);
+        }
+
+        public Type GetDelegateType(CallingConvention callingConvention, Type returnType, params Type[] argumentTypes)
+        {
             if (null == returnType)
                 throw new ArgumentNullException("returnType");
 
             if (null == argumentTypes)
                 throw new ArgumentNullException("argumentTypes");
 
-            var key = DelegateTypeFactory.DelegateKey(returnType, argumentTypes);
+            var key = DelegateTypeFactory.DelegateKey(callingConvention, returnType, argumentTypes);
             if (false == this.storage.ContainsKey(key))
             {
                 lock (this.storage)
                 {
                     if (false == this.storage.ContainsKey(key))
                     {
-                        this.storage[key] = this.CreateNewDelegateType(returnType, argumentTypes);
+                        this.storage[key] = this.CreateNewDelegateType(callingConvention, returnType, argumentTypes);
                     }
                 }
             }
@@ -57,23 +63,26 @@ namespace Karadzhov.Interop.DynamicLibraries
             return this.storage[key];
         }
 
-        private Type CreateNewDelegateType(Type returnType, params Type[] argumentTypes)
+        private Type CreateNewDelegateType(CallingConvention callingConvention, Type returnType, params Type[] argumentTypes)
         {
             var delegateId = Guid.NewGuid().ToString("N");
             var typeBuilder = this.moduleBuilder.DefineType("Delegate_" + delegateId, TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass, typeof(MulticastDelegate));
             var constructorBuilder = typeBuilder.DefineConstructor(MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public, CallingConventions.Standard, new Type[] { typeof(object), typeof(IntPtr) });
             constructorBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 
-            var methodBuilder = typeBuilder.DefineMethod("Invoke", MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual, CallingConventions.Standard, returnType, null, new Type[] { typeof(CallConvCdecl) }, argumentTypes, null, null);
+            var conventionType = DelegateTypeFactory.CallingConventionTypeMap(callingConvention);
+            var methodBuilder = typeBuilder.DefineMethod("Invoke", MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual, CallingConventions.Standard, returnType, null, new Type[] { conventionType }, argumentTypes, null, null);
             methodBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 
             var t = typeBuilder.CreateType();
             return t;
         }
 
-        private static string DelegateKey(Type returnType, Type[] argumentTypes)
+        private static string DelegateKey(CallingConvention callingConvention, Type returnType, Type[] argumentTypes)
         {
             var stringBuilder = new StringBuilder();
+            stringBuilder.Append(callingConvention.ToString());
+            stringBuilder.Append(";");
             stringBuilder.Append(returnType.FullName);
 
             for (var i = 0; i < argumentTypes.Length; i++)
@@ -83,6 +92,23 @@ namespace Karadzhov.Interop.DynamicLibraries
             }
 
             return stringBuilder.ToString();
+        }
+
+        private static Type CallingConventionTypeMap(CallingConvention callingConvention)
+        {
+            switch (callingConvention)
+            {
+                case CallingConvention.Cdecl:
+                    return typeof(CallConvCdecl);
+                case CallingConvention.FastCall:
+                    return typeof(CallConvFastcall);
+                case CallingConvention.StdCall:
+                    return typeof(CallConvStdcall);
+                case CallingConvention.ThisCall:
+                    return typeof(CallConvThiscall);
+                default:
+                    return typeof(CallConvCdecl);
+            }
         }
 
         private ModuleBuilder moduleBuilder;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Karadzhov.Interop.DynamicLibraries
 {
@@ -75,6 +76,22 @@ namespace Karadzhov.Interop.DynamicLibraries
         /// <summary>
         /// Invokes the specified method from the given library.
         /// </summary>
+        /// <typeparam name="TReturn">The return type of the method.</typeparam>
+        /// <param name="callingConvention">The calling convention.</param>
+        /// <param name="library">The path to the library. Can be full path to a DLL/EXE or relative to the current directory.</param>
+        /// <param name="method">The method name.</param>
+        /// <param name="arguments">The arguments that will be passed to the method.</param>
+        /// <returns>
+        /// The result of the method.
+        /// </returns>
+        public static TReturn Invoke<TReturn>(CallingConvention callingConvention, string library, string method, params object[] arguments)
+        {
+            return (TReturn)DynamicLibraryManager.Invoke(callingConvention, library, method, typeof(TReturn), arguments);
+        }
+
+        /// <summary>
+        /// Invokes the specified method from the given library.
+        /// </summary>
         /// <param name="library">The path to the library. Can be full path to a DLL/EXE or relative to the current directory.</param>
         /// <param name="method">The method name.</param>
         /// <param name="returnType">The return type of the method.</param>
@@ -84,7 +101,23 @@ namespace Karadzhov.Interop.DynamicLibraries
         /// </returns>
         public static object Invoke(string library, string method, Type returnType, params object[] arguments)
         {
-            return DynamicLibraryManager.Instance.InstanceInvoke(library, method, returnType, arguments);
+            return DynamicLibraryManager.Instance.InstanceInvoke(CallingConvention.Cdecl, library, method, returnType, arguments);
+        }
+
+        /// <summary>
+        /// Invokes the specified method from the given library.
+        /// </summary>
+        /// <param name="callingConvention">The calling convention.</param>
+        /// <param name="library">The path to the library. Can be full path to a DLL/EXE or relative to the current directory.</param>
+        /// <param name="method">The method name.</param>
+        /// <param name="returnType">The return type of the method.</param>
+        /// <param name="arguments">The arguments that will be passed to the method.</param>
+        /// <returns>
+        /// The result of the method.
+        /// </returns>
+        public static object Invoke(CallingConvention callingConvention, string library, string method, Type returnType, params object[] arguments)
+        {
+            return DynamicLibraryManager.Instance.InstanceInvoke(callingConvention, library, method, returnType, arguments);
         }
 
         private static Lazy<DynamicLibraryManager> instance = new Lazy<DynamicLibraryManager>(() => new DynamicLibraryManager());
@@ -99,7 +132,7 @@ namespace Karadzhov.Interop.DynamicLibraries
         }
 
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "The reference is stored in a dictionary and released upon Dispose.")]
-        public object InstanceInvoke(string library, string method, Type returnType, params object[] arguments)
+        public object InstanceInvoke(CallingConvention callingConvention, string library, string method, Type returnType, params object[] arguments)
         {
             if (null == library)
                 throw new ArgumentNullException("library");
@@ -121,7 +154,7 @@ namespace Karadzhov.Interop.DynamicLibraries
                 }
             }
 
-            var result = this.loadedLibraries[library].Invoke(method, returnType, arguments);
+            var result = this.loadedLibraries[library].Invoke(callingConvention, method, returnType, arguments);
             return result;
         }
 

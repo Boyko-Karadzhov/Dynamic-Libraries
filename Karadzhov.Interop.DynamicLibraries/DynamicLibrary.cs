@@ -57,7 +57,7 @@ namespace Karadzhov.Interop.DynamicLibraries
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        public object Invoke(string method, Type returnType, params object[] arguments)
+        public object Invoke(CallingConvention callingConvention, string method, Type returnType, params object[] arguments)
         {
             if (isDisposed)
                 throw new ObjectDisposedException(key);
@@ -78,7 +78,7 @@ namespace Karadzhov.Interop.DynamicLibraries
                         throw new Win32Exception(error, string.Format(CultureInfo.InvariantCulture, "Could not find method {0} in library {1}. Error code: {2}.", method, key, error));
                     }
 
-                    var del = DelegateTypeFactory.Current.GetDelegateType(returnType, arguments.Select(a => a != null ? a.GetType() : typeof(IntPtr)).ToArray());
+                    var del = DelegateTypeFactory.Current.GetDelegateType(callingConvention, returnType, arguments.Select(a => a != null ? a.GetType() : typeof(IntPtr)).ToArray());
                     this.methods[method] = Marshal.GetDelegateForFunctionPointer(procedurePointer, del);
                 }
 
