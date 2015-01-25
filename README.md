@@ -22,7 +22,9 @@ Lets say you want to call a procedure that is defined in a native assembly _C:\M
 ### DynamicLibraryManager.Invoke
 You call the procedure above in a C# code using this method:
 
-    Karadzhov.Interop.DynamicLibraries.DynamicLibraryManager.Invoke<int>("C:\\MyAssembly.dll", "sum", 2, 5);
+    Karadzhov.Interop.DynamicLibraries.DynamicLibraryManager.Invoke<int>(CallingConvention.Cdecl, "C:\\MyAssembly.dll", "sum", 2, 5);
+
+_The calling convention is optional. Cdecl is default._
 
 ---
 
