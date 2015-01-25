@@ -44,8 +44,12 @@
     <AssemblyOriginatorKeyFile>Karadzhov.Interop.DynamicLibraries.Tests.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Karadzhov.ExternalInvocations.VisualStudioCommonTools">
-      <HintPath>..\packages\Karadzhov.ExternalInvocations.0.1.0.0\lib\Karadzhov.ExternalInvocations.VisualStudioCommonTools.dll</HintPath>
+    <Reference Include="Karadzhov.ExternalInvocations.NvidiaToolkit">
+      <HintPath>..\packages\Karadzhov.ExternalInvocations.0.2.0.0\lib\Karadzhov.ExternalInvocations.NvidiaToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="Karadzhov.ExternalInvocations.VisualStudioCommonTools, Version=0.2.0.0, Culture=neutral, PublicKeyToken=bc4793e73446d41c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Karadzhov.ExternalInvocations.0.2.0.0\lib\Karadzhov.ExternalInvocations.VisualStudioCommonTools.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
