@@ -8,6 +8,9 @@ using System.Runtime.InteropServices;
 
 namespace Karadzhov.Interop.DynamicLibraries
 {
+    /// <summary>
+    /// Entry point for managing dynamic libraries.
+    /// </summary>
     public sealed class DynamicLibraryManager
     {
         #region Static
@@ -131,6 +134,15 @@ namespace Karadzhov.Interop.DynamicLibraries
             this.loadedLibraries = new ConcurrentDictionary<string, DynamicLibrary>();
         }
 
+        /// <summary>
+        /// Used to invoke a method from a dynamic library.
+        /// </summary>
+        /// <param name="callingConvention">The calling convention.</param>
+        /// <param name="library">The dynamic library.</param>
+        /// <param name="method">The method name to invoke.</param>
+        /// <param name="returnType">Expected return tyoe.</param>
+        /// <param name="arguments">Argument to invoke the method with.</param>
+        /// <returns>Whatever the invoked method returns.</returns>
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "The reference is stored in a dictionary and released upon Dispose.")]
         public object InstanceInvoke(CallingConvention callingConvention, string library, string method, Type returnType, params object[] arguments)
         {
@@ -158,6 +170,9 @@ namespace Karadzhov.Interop.DynamicLibraries
             return result;
         }
 
+        /// <summary>
+        /// Unloads all dynamic libraries which are loaded through the manager.
+        /// </summary>
         public void InstanceReset()
         {
             while (this.loadedLibraries.Keys.Count > 0)
@@ -166,6 +181,11 @@ namespace Karadzhov.Interop.DynamicLibraries
             }
         }
 
+        /// <summary>
+        /// Unloads a specific library.
+        /// </summary>
+        /// <param name="library">The library.</param>
+        /// <param name="throwIfNotFound">When true the method will throw an exception when called for library which is not loaded.</param>
         public void InstanceReset(string library, bool throwIfNotFound)
         {
             DynamicLibrary libraryToReset;
