@@ -147,13 +147,13 @@ namespace Karadzhov.Interop.DynamicLibraries
         public object InstanceInvoke(CallingConvention callingConvention, string library, string method, Type returnType, params object[] arguments)
         {
             if (null == library)
-                throw new ArgumentNullException("library");
+                throw new ArgumentNullException(nameof(library));
 
             if (null == method)
-                throw new ArgumentNullException("method");
+                throw new ArgumentNullException(nameof(method));
 
             if (null == returnType)
-                throw new ArgumentNullException("returnType");
+                throw new ArgumentNullException(nameof(returnType));
 
             if (false == this.loadedLibraries.ContainsKey(library))
             {

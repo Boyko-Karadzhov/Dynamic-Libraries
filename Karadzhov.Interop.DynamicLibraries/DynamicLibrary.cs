@@ -116,9 +116,9 @@ namespace Karadzhov.Interop.DynamicLibraries
         }
 
         private volatile bool isDisposed;
-        private string key;
+        private readonly string key;
         private DynamicLibraryHandle handle;
         private ReaderWriterLockSlim invocationLock;
-        private IDictionary<string, Delegate> methods;
+        private readonly IDictionary<string, Delegate> methods;
     }
 }
