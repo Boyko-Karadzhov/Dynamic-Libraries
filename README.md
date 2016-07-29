@@ -5,6 +5,8 @@ A .Net library for managing native DLLs at run-time.
 
 This library provides the ability to call procedures from native DLLs without knowing the names of the procedures or libraries that you are going to use while compiling.
 
+[![Build status](https://ci.appveyor.com/api/projects/status/5nwckl8eeii5hdq2?svg=true)](https://ci.appveyor.com/project/Boyko-Karadzhov/dynamic-libraries)
+
 # Installation
 
 To install Dynamic-Libraries, run the following command in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console)
